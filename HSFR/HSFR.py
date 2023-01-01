@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 
 
+# Generalized matrix factorization is  from the paper  Neural collaborative filtering
+#  https://arxiv.org/abs/1708.05031
+
 class GMF(nn.Module):
     def __init__(self, user_num, item_num, embedding_dim, dropout):
         super(GMF, self).__init__()
@@ -45,8 +48,7 @@ class HSFM(nn.Module):
             nn.Conv2d(channels, channels, kernel_size=1, stride=1, padding=0),
             nn.BatchNorm2d(channels),
             nn.ReLU(inplace=True),
-            # nn.Conv2d(inter_channels, channels, kernel_size=1, stride=1, padding=0),
-            # nn.BatchNorm2d(channels),
+
         )
 
         # Global attention
@@ -55,8 +57,7 @@ class HSFM(nn.Module):
             nn.Conv2d(channels, channels, kernel_size=1, stride=1, padding=0),
             nn.BatchNorm2d(channels),
             nn.ReLU(inplace=True),
-            # nn.Conv2d(inter_channels, channels, kernel_size=1, stride=1, padding=0),
-            # nn.BatchNorm2d(channels),
+
         )
 
         self.sigmoid = nn.Sigmoid()
@@ -77,7 +78,7 @@ class Model(nn.Module):
     def __init__(self, user_count, item_count):
         super(Model, self).__init__()
 
-        # some variables
+        
         self.user_count = user_count
         self.item_count = item_count
 
@@ -88,8 +89,8 @@ class Model(nn.Module):
         self.k_size = [3, 3]
         self.stride = 1
 
-        # filter of 7x7
-        # self.conv_out_channels = 1
+
+
         self.filtered = [(self.flat_shape[0] - self.k_size[0]) // self.stride + 1,
                          (self.flat_shape[1] - self.k_size[1]) // self.stride + 1]
 
@@ -101,7 +102,7 @@ class Model(nn.Module):
         self.P = nn.Embedding(self.user_count, self.embedding_size).cuda()
         self.Q = nn.Embedding(self.item_count, self.embedding_size).cuda()
 
-        # GMC
+        # GMF
         # self.GMF_model = GMF(self.user_count, self.item_count, self.embedding_size, 0.0)
         # cnn setting
         self.channel_size = 32
@@ -112,22 +113,17 @@ class Model(nn.Module):
                                    stride=self.strides)
         self.trd_layer = nn.Conv2d(self.channel_size * 2, self.channel_size, self.kernel_size,
                                    stride=self.strides)
-        # self.gated = EfficientAttentions(self.channel_size, self.channel_size, 1, self.channel_size)
-        # self.f_drop = nn.Dropout(0.5)
+
         self.in_drop = nn.Dropout(0.2)
         self.in_relu = nn.ReLU()
-
-        # Attn
-        # self.eff_attn = IntraScaled(32, 4, 4, gated_atten=False)  # tune the p
-        # self.eff_relu = nn.ReLU()
 
         self.hsfm = HSFM(channels=self.channel_size)
         self.out_drp = nn.Dropout(0.2)
         self.out_layer = nn.Linear(self.user_count, 1)  # nn.Conv2d(128, 32, kernel_size=1) #nn.Linear(1,64)
 
     def forward(self, user_ids, item_ids):
-        # GMC
-        # gmc = self.GMF_model(user_ids, item_ids)
+        # GMF
+        # gmf = self.GMF_model(user_ids, item_ids)
         # convert float to int
         user_ids = list(map(int, user_ids))
         item_ids = list(map(int, item_ids))
@@ -151,21 +147,17 @@ class Model(nn.Module):
         x = self.in_drop(x)
         x = self.in_relu(x)
 
-        # x = self.eff_attn(x)
-        # x = self.eff_relu(x)
-
-        # print(x.shape, y.shape)
         x = self.hsfm(x, y)
 
         x = x.view(256, -1, *[2, 2])
-        x = x.sum(dim=1)  # why sum along the channel
+        x = x.sum(dim=1)
 
         x = x.view(256, -1)
         # print(x.shape)
         x = self.fc1(x)
         # m = y
         # matrix multiplication
-        x = torch.mm(x, self.P.weight.transpose(1, 0))  #talk about this
+        x = torch.mm(x, self.P.weight.transpose(1, 0))
         # print(x.shape, m.shape)
         x = self.out_drp(x)
         x = self.out_layer(x)
