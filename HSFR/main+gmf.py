@@ -10,9 +10,9 @@ import torch.backends.cudnn as cudnn
 from torch.utils.tensorboard import SummaryWriter
 
 import data_util
-import evaluate
 
-from cnnbase_hsfm import Model
+
+from cnnbase_hsfm_gmf import Model, evaluate_withgmf
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--lr", type=float, default=0.00001, help="learning rate")  # 0.00001
@@ -76,6 +76,7 @@ if __name__ == "__main__":
     model = Model(user_num, item_num)
     model.to(device=args.device)
     loss_cnn = BPRLoss()
+    loss_gmc = nn.BCEWithLogitsLoss()
 
     optimizer = optim.Adagrad(model.parameters(), lr=args.lr)  # check
 
@@ -94,11 +95,16 @@ if __name__ == "__main__":
             item = item.to(device=args.device)
             label = label.to(device=args.device)
             model.zero_grad()
+            pred = model(user, item)
 
             pos = model(user, item)
             neg = model(user, label)
 
             loss = loss_cnn(pos, neg)  # - 0.01*l2
+            # uncomment the following 3 lines to use the weights from GMF
+            loss1 = loss_cnn(pos, neg)
+            loss2 = loss_gmc(pred, label.float())
+            loss = loss1 + loss2
 
             loss.backward()
             optimizer.step()
@@ -106,7 +112,7 @@ if __name__ == "__main__":
             count += 1
 
         model.eval()
-        HR, NDCG = evaluate.metrics(model, test_loader, args.top_k, args.device)
+        HR, NDCG = evaluate_withgmf.metrics(model, test_loader, args.top_k, args.device)
         writer.add_scalar("ml-1mchanneh64HR@hsmf+stack", HR, epoch)
         writer.add_scalar("ml-1mchannel64NDCCG@hsfm+stack", NDCG, epoch)
         elapsed_time = time.time() - start_time
