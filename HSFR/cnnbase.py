@@ -32,7 +32,7 @@ class Model(nn.Module):
         self.channel_size = 32
         self.kernel_size = 2
         self.strides = 2
-        self.in_layer = nn.Conv2d(2, self.channel_size * 2, self.kernel_size, stride=self.strides)
+        self.in_layer = nn.Conv2d(3, self.channel_size * 2, self.kernel_size, stride=self.strides)
         self.sec_layer = nn.Conv2d(self.channel_size * 2, self.channel_size * 2, self.kernel_size,
                                    stride=self.strides)
         self.trd_layer = nn.Conv2d(self.channel_size * 2, self.channel_size, self.kernel_size,
@@ -57,7 +57,7 @@ class Model(nn.Module):
 
         # 2D convolution for non-linear interaction map
         m = torch.bmm(user_2d, item_2d).view(-1, 1, *self.spatial_shape)
-        p = torch.cat([m, m], dim=1)
+        p = torch.cat([m, m,m], dim=1)
         # print(m.shape, p.shape)
         # cnn
         x = self.in_layer(p)  # output: batch_size  32  1 * 1
