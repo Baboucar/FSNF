@@ -32,7 +32,7 @@ class Model(nn.Module):
         self.channel_size = 32
         self.kernel_size = 2
         self.strides = 2
-        self.in_layer = nn.Conv2d(3, self.channel_size * 2, self.kernel_size, stride=self.strides)
+        self.in_layer = nn.Conv2d(2, self.channel_size * 2, self.kernel_size, stride=self.strides)
         self.sec_layer = nn.Conv2d(self.channel_size * 2, self.channel_size * 2, self.kernel_size,
                                    stride=self.strides)
         self.trd_layer = nn.Conv2d(self.channel_size * 2, self.channel_size, self.kernel_size,
