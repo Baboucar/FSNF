@@ -10,9 +10,9 @@ import torch.backends.cudnn as cudnn
 from torch.utils.tensorboard import SummaryWriter
 
 import data_util
+import evaluate_withgmf
 
-
-from cnnbase_hsfm_gmf import Model, evaluate_withgmf
+from cnnbase_hsfm_gmf import Model
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--lr", type=float, default=0.00001, help="learning rate")  # 0.00001
@@ -20,8 +20,6 @@ parser.add_argument("--dropout", type=float, default=0.0, help="dropout rate")
 parser.add_argument("--batch_size", type=int, default=256, help="batch size for training")
 parser.add_argument("--epochs", type=int, default=20, help="training epoches")
 parser.add_argument("--top_k", type=int, default=10, help="compute metrics@top_k")
-# parser.add_argument("--embedding_dim", type=int, default=64, help="dimension of embedding")
-# parser.add_argument("--hidden_layer", type=list, default=[128, 64, 32, 16], help="dimension of each hidden layer")
 parser.add_argument("--num_ng", type=int, default=4, help="sample negative items for training")
 parser.add_argument("--test_num_ng", type=int, default=256, help="sample part of negative items for testing")
 parser.add_argument("--data_set", type=str, default="ml-1m", help="data set. 'ml-1m' or 'pinterest-20'")

@@ -28,8 +28,6 @@ class Model(nn.Module):
         self.P = nn.Embedding(self.user_count, self.embedding_size).cuda()
         self.Q = nn.Embedding(self.item_count, self.embedding_size).cuda()
 
-        # GMF
-
         # cnn setting
         self.channel_size = 32
         self.kernel_size = 2
@@ -47,7 +45,6 @@ class Model(nn.Module):
         self.out_layer = nn.Linear(self.user_count, 1)  # nn.Conv2d(128, 32, kernel_size=1) #nn.Linear(1,64)
 
     def forward(self, user_ids, item_ids):
-
         # convert float to int
         user_ids = list(map(int, user_ids))
         item_ids = list(map(int, item_ids))
@@ -86,5 +83,3 @@ class Model(nn.Module):
 
         pred = torch.sigmoid(x)
         return pred.view(-1)
-
-

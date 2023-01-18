@@ -23,9 +23,6 @@ def metrics(model, test_loader, top_k, device):
         item = item.to(device=device)
 
         predictions = model(user, item)
-        # print("prediction", predictions)
-        # predictions = predictions.transpose(1,0)
-        # _, indices = torch.topk(predictions[0], top_k)  uncommendt this line if you want to use the weights from GMF
         _, indices = torch.topk(predictions, top_k)
 
         recommends = torch.take(item, indices).cpu().numpy().tolist()
