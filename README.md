@@ -16,5 +16,5 @@
 ### Example to run:
 ```
 to run the CNN-Base and CNN-Base+HSFR model, run the main.py in HSFR/main.py
-to run the CNN-Base+HSFM+GMF model, run  the  main+gmf.py in HSFR/main+gmf.py
+to run the CNN-Base+HSFM+GMF model, run  the  main_gmf.py in HSFR/main+gmf.py
 ```
