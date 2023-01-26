@@ -14,11 +14,11 @@ import evaluate
 
 from cnnbase_hsfm import Model
 
+# from cnnbase import Model
 parser = argparse.ArgumentParser()
-parser.add_argument("--lr", type=float, default=0.00001, help="learning rate")  # 0.00001
-parser.add_argument("--dropout", type=float, default=0.0, help="dropout rate")
+parser.add_argument("--lr", type=float, default=0.00001, help="learning rate")
 parser.add_argument("--batch_size", type=int, default=256, help="batch size for training")
-parser.add_argument("--epochs", type=int, default=20, help="training epoches")
+parser.add_argument("--epochs", type=int, default=20, help="training epochs")
 parser.add_argument("--top_k", type=int, default=10, help="compute metrics@top_k")
 parser.add_argument("--num_ng", type=int, default=4, help="sample negative items for training")
 parser.add_argument("--test_num_ng", type=int, default=256, help="sample part of negative items for testing")

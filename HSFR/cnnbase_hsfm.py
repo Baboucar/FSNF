@@ -78,12 +78,12 @@ class Model(nn.Module):
         self.trd_layer = nn.Conv2d(self.channel_size * 2, self.channel_size, self.kernel_size,
                                    stride=self.strides)
 
-        self.in_drop = nn.Dropout(0.2)
+        self.in_drop = nn.Dropout(0.5)
         self.in_relu = nn.ReLU()
 
         self.hsfm = HSFM(channels=self.channel_size)
-        self.out_drp = nn.Dropout(0.2)
-        self.out_layer = nn.Linear(self.user_count, 1)  # nn.Conv2d(128, 32, kernel_size=1) #nn.Linear(1,64)
+        self.out_drp = nn.Dropout(0.5)
+        self.out_layer = nn.Linear(self.user_count, 1)
 
     def forward(self, user_ids, item_ids):
         # convert float to int
